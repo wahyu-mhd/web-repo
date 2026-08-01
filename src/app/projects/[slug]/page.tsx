@@ -48,6 +48,15 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                 <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
                     {/* Minimal intro or first desc line as motivation if we wanted, but we can just use the description block directly. */}
                 </p>
+                {project.images && project.images.length > 0 && (
+                    <div className="flex flex-col gap-6 w-full max-w-4xl mt-8 mb-8">
+                        {project.images.map((imgSrc, idx) => (
+                            <div key={idx} className="overflow-hidden rounded-xl border border-border/50 shadow-md">
+                                <img src={imgSrc} alt={`${project.title} screenshot ${idx + 1}`} className="w-full h-auto object-cover" />
+                            </div>
+                        ))}
+                    </div>
+                )}
             </header>
 
             <div className="max-w-3xl space-y-8 text-foreground/90 leading-relaxed text-lg">

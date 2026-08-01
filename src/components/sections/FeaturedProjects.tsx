@@ -1,5 +1,6 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import { useState } from 'react';
 import { projects, Project } from '@/data/projects';
 import { Globe, TerminalSquare, ShieldAlert } from 'lucide-react';
@@ -38,27 +39,16 @@ function ProjectCard({ project, index }: { project: Project, index: number }) {
             </div>
 
             <div className="flex-grow space-y-4">
-                {project.description.map((desc, i) => (
-                    <p key={i} className="text-muted-foreground text-sm leading-relaxed">
-                        {desc}
-                    </p>
-                ))}
-
-                {project.subBullets && project.subBullets.length > 0 && (
-                    <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1 my-3">
-                        {project.subBullets.map((bullet, i) => (
-                            <li key={i}>{bullet}</li>
-                        ))}
-                    </ul>
-                )}
-
-                {project.descriptionContinuation && (
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                        {project.descriptionContinuation}
-                    </p>
-                )}
+                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
+                    {project.shortDescription || project.description[0]}
+                </p>
             </div>
 
+            <div className="mt-8 pt-6 border-t border-border/50 transition-colors">
+                <Link href={`/projects/${project.slug}`} className="inline-flex items-center text-primary font-medium hover:underline text-sm group-hover:text-cyan-400">
+                    Read Detailed Breakdown <span className="ml-1 transition-transform group-hover:translate-x-1">→</span>
+                </Link>
+            </div>
         </motion.div>
     );
 }
