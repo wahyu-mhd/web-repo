@@ -16,7 +16,7 @@ export function Contact() {
     };
 
     return (
-        <section id="contact" className="py-24 container mx-auto px-6 max-w-4xl relative">
+        <section id="contact" className="min-h-screen flex flex-col justify-center w-full py-24 container mx-auto px-6 max-w-4xl relative">
 
             <div className="text-center mb-16">
                 <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
@@ -39,14 +39,22 @@ export function Contact() {
                         Direct Contact
                     </h3>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-                        If you prefer not to use the form, you can reach out directly via email. I usually respond within 24 hours.
+                        My inbox is always open. Whether you have a question or just want to say hi, I'll try my best to get back to you!
                     </p>
 
                     <button
-                        onClick={() => navigator.clipboard.writeText('hello@example.com')}
+                        onClick={() => navigator.clipboard.writeText('ipwahyumahendra@gmail.com')}
                         className="w-full justify-between flex items-center px-4 py-3 bg-secondary border border-border/50 rounded-md font-mono text-sm text-foreground hover:bg-secondary/70 transition-colors"
                     >
-                        hello@example.com
+                        ipwahyumahendra@gmail.com
+                        <span className="text-xs text-muted-foreground border border-border/50 bg-background px-2 py-0.5 rounded">Copy</span>
+                    </button>
+
+                    <button
+                        onClick={() => navigator.clipboard.writeText('(+61)422-114-196')}
+                        className="w-full mt-4 justify-between flex items-center px-4 py-3 bg-secondary border border-border/50 rounded-md font-mono text-sm text-foreground hover:bg-secondary/70 transition-colors"
+                    >
+                        (+61) 422-114-196
                         <span className="text-xs text-muted-foreground border border-border/50 bg-background px-2 py-0.5 rounded">Copy</span>
                     </button>
                 </div>

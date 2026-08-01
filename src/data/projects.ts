@@ -1,86 +1,41 @@
 export interface Project {
     slug: string;
     title: string;
-    summary: string;
-    problem: string;
-    motivation: string;
-    features: string[];
-    technologies: string[];
-    securityConsiderations: string[];
-    engineeringChallenges: string[];
-    myContribution: string;
+    description: string[];
+    subBullets?: string[];
+    descriptionContinuation?: string; // used for paragraph splits in CV
     category: 'Software Engineering' | 'Cybersecurity' | 'Infrastructure' | 'Cloud' | 'Other';
-    status: 'Completed' | 'In Progress' | 'Archived';
-    date: string;
-    links: {
+    featured: boolean;
+    links?: {
         github?: string;
         live?: string;
         demo?: string;
-        docs?: string;
     };
-    featured: boolean;
-    outcomes: string[];
 }
 
 export const projects: Project[] = [
     {
-        slug: 'chunkvault',
-        title: 'ChunkVault',
-        summary: 'A self-hosted secure personal cloud storage platform with AES-GCM encryption.',
-        problem: 'Standard cloud providers have full visibility into personal stored data, risking data exposure on breaches without explicit client-side encryption controls.',
-        motivation: 'To explore robust self-hosted infrastructure, data streaming architecture, and applied cryptography over a performant backend.',
-        features: [
-            'File chunking and streaming support up to 50GB',
-            'AES-256-GCM encryption before storage',
-            'SHA-256 integrity verification',
-            'Deduplication engine reducing storage overlap',
-            'Secure file reconstruction and download pipeline'
+        slug: 'wazuh-soc-lab',
+        title: 'Mini SOC Lab (Wazuh SIEM)',
+        description: [
+            'Designed and deployed a mini Security Operations Center (SOC) lab on VirtualBox by configuring a multi-node environment: Wazuh Manager/Indexer/Dashboard, Ubuntu endpoint, and Kali Linux attacker and simulating real world attacks mapped to MITRE ATT&CK:'
         ],
-        technologies: ['FastAPI', 'Next.js', 'PostgreSQL', 'SQLAlchemy', 'Docker', 'Tailscale', 'Python'],
-        securityConsiderations: [
-            'Encryption happens on the stream boundary ensuring at-rest security.',
-            'Tailscale mesh networking creates a dark deployment inaccessible from the public internet.',
-            'Auth tokens are strictly validated via short-lived JWTs.'
+        subBullets: [
+            'Brute Force (T1110) using Hydra',
+            'Privilege Escalation (T1548.003) via sudo abuse',
+            'Valid Accounts (T1078) using Netcat'
         ],
-        engineeringChallenges: [
-            'Designing a reliable multipart chunking strategy to bypass memory bottlenecks when uploading large video files.',
-            'Ensuring the SQLAlchemy ORM layer securely mapped chunks to parent file nodes with atomic commits avoiding corrupt states.'
-        ],
-        myContribution: 'Architected and built the entire backend pipeline and database schema, alongside the user interface.',
+        descriptionContinuation: 'Monitored and analyzed logs to generate actionable alerts via Wazuh Dashboard by troubleshooting network configurations (NAT, Host-Only, Internal Network) to ensure proper agent-server communication, and understanding of log collection, SIEM pipelines, and detection engineering fundamentals.',
         category: 'Cybersecurity',
-        status: 'Completed',
-        date: '2025',
-        links: { github: 'https://github.com' },
-        featured: true,
-        outcomes: ['Achieved 30MB/s encrypted upload throughput.', 'Currently securing 2TB of personal backups.']
+        featured: true
     },
     {
-        slug: 'wazuh-soc-lab',
-        title: 'Wazuh SOC Mini-Lab',
-        summary: 'A home cybersecurity monitoring lab demonstrating detection engineering capabilities.',
-        problem: 'Theoretical security knowledge required practical validation via active monitoring and realistic alert analysis environments.',
-        motivation: 'To gain hands-on experience tuning SIEM configurations and understanding live attack footprint metrics.',
-        features: [
-            'Wazuh SIEM deployed on a segmented network',
-            'Simulated SSH brute-force and privilege escalation attacks',
-            'Custom detection rules mapped to MITRE ATT&CK',
-            'Automated log ingestion and alert firing'
+        slug: 'cicd-automation',
+        title: 'Automation & CI/CD Pipeline Project',
+        description: [
+            'Designed and implemented a CI/CD pipeline using Jenkins, integrated with GitHub for automated build and deployment workflows by configuring Gradle as the build system to manage dependencies and automate project compilation and exposing local services using ngrok to enable external webhook triggers and testing'
         ],
-        technologies: ['Linux', 'Wazuh', 'Bash', 'Docker', 'Security Operations'],
-        securityConsiderations: [
-            'Lab isolated strictly from host networks to prevent accidental compromise propagation.',
-            'Least-privilege auditing configurations applied on watched endpoints.'
-        ],
-        engineeringChallenges: [
-            'Writing performant decoders and rules that did not swamp the SIEM instance under high load log generation.',
-            'Creating realistic attacks without relying strictly on automated noisy tools, mimicking real adversary behavior.'
-        ],
-        myContribution: 'Configured the infrastructure, developed the attack scripts, and tuned the detection logic.',
-        category: 'Cybersecurity',
-        status: 'Completed',
-        date: '2024',
-        links: {},
-        featured: true,
-        outcomes: ['Successfully caught and alarmed on 95% of simulated lateral movement attempts.', 'Wrote 12 custom detection rules.']
+        category: 'Infrastructure',
+        featured: true
     }
 ];

@@ -66,7 +66,7 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.1 }}
                     className="text-4xl md:text-6xl font-bold tracking-tight text-foreground max-w-3xl leading-[1.1] mb-6"
                 >
-                    Computer Science Student Building <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500">Secure & Reliable Systems</span>
+                    Hi, I'm <span className="text-primary">I Putu Wahyu Mahendra</span>. Building <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500">Secure & Reliable Systems</span>
                 </motion.h1>
 
                 <motion.p

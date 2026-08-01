@@ -1,113 +1,240 @@
 'use client';
 import { useEffect, useRef, Children } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, useMotionValue, useSpring, useTransform, MotionValue } from 'framer-motion';
 import { useSectionNavigation } from '@/lib/section-context';
 
-const TRANSITION_MS = 700;
-const WHEEL_THRESHOLD = 50;
-const WHEEL_RESET_MS = 150;
+const WHEEL_MULTIPLIER = 0.008;
+const TOUCH_MULTIPLIER = 1.5;
+const MAX_ADVANCE = 1.25;
+
+function CylinderPanel({
+    children,
+    index,
+    springProgress,
+    activeIndex,
+    shouldReduceMotion,
+}: {
+    children: React.ReactNode;
+    index: number;
+    springProgress: MotionValue<number>;
+    activeIndex: number;
+    shouldReduceMotion: boolean | null;
+}) {
+    // Visibility optimization: hide panels far away
+    const isNearby = Math.abs(activeIndex - index) <= 1;
+    const isActive = activeIndex === index;
+
+    // Use continuous mapped values for premium physics
+    const rotateX = useTransform(springProgress, [index - 1, index, index + 1], [75, 0, -75]);
+    const z = useTransform(springProgress, [index - 1, index, index + 1], [-250, 0, -250]);
+    const scale = useTransform(springProgress, [index - 1, index, index + 1], [0.94, 1, 0.94]);
+    const opacity = useTransform(springProgress, [index - 0.7, index, index + 0.7], [0, 1, 0]);
+
+    if (shouldReduceMotion) {
+        return (
+            <motion.div
+                data-cylinder-panel=""
+                className="absolute inset-0 overflow-y-auto"
+                animate={{ opacity: isActive ? 1 : 0 }}
+                transition={{ duration: 0.15 }}
+                style={{
+                    pointerEvents: isActive ? 'auto' : 'none',
+                    visibility: isNearby ? 'visible' : 'hidden',
+                    zIndex: isActive ? 10 : 1,
+                }}
+            >
+                {children}
+            </motion.div>
+        );
+    }
+
+    return (
+        <motion.div
+            data-cylinder-panel=""
+            className="absolute inset-0 overflow-y-auto"
+            style={{
+                rotateX,
+                z,
+                scale,
+                opacity,
+                transformOrigin: '50% 50%',
+                backfaceVisibility: 'hidden',
+                pointerEvents: isActive ? 'auto' : 'none',
+                visibility: isNearby ? 'visible' : 'hidden',
+                zIndex: isActive ? 10 : 1,
+                willChange: 'transform, opacity',
+            }}
+        >
+            {children}
+        </motion.div>
+    );
+}
 
 export function CylinderScroll({ children }: { children: React.ReactNode }) {
-    const { activeIndex, goToSection, goNext, goPrev, sectionIds } =
-        useSectionNavigation();
+    const { activeIndex, goToSection, sectionIds } = useSectionNavigation();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const shouldReduceMotion = useReducedMotion();
-    const lockRef = useRef(false);
-    const accRef = useRef(0);
-    const accTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const idxRef = useRef(activeIndex);
 
     const sections = Children.toArray(children);
+    const maxIndex = sections.length - 1;
 
-    // Keep ref in sync with state
+    // Track scroll intentions and prevent external conflict
+    const isScrolling = useRef(false);
+    const targetRef = useRef(activeIndex);
+    const snapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Continuous motion values backed by a critically damped spring
+    const rawProgress = useMotionValue(activeIndex);
+    const springProgress = useSpring(rawProgress, {
+        stiffness: 60,
+        damping: 18,
+        restDelta: 0.001
+    });
+
+    // Sync external navigations (navbar clicks, hash changes) to virtual scroll
     useEffect(() => {
-        idxRef.current = activeIndex;
-    }, [activeIndex]);
+        if (!isScrolling.current) {
+            targetRef.current = activeIndex;
+            rawProgress.set(activeIndex);
+        }
+    }, [activeIndex, rawProgress]);
 
-    // Lock body scroll
+    // Handle generic analog delta inputs (wheel, touch)
+    const processDelta = (inc: number) => {
+        isScrolling.current = true;
+
+        let newTarget = targetRef.current + inc;
+
+        // Hard bounds
+        newTarget = Math.max(0, Math.min(maxIndex, newTarget));
+
+        // Soft momentum bounds: prevents extreme trackpad gliding skipping multiple sections
+        newTarget = Math.max(activeIndex - MAX_ADVANCE, Math.min(activeIndex + MAX_ADVANCE, newTarget));
+
+        targetRef.current = newTarget;
+        rawProgress.set(newTarget);
+
+        if (snapTimer.current) clearTimeout(snapTimer.current);
+        snapTimer.current = setTimeout(() => {
+            const nearest = Math.round(targetRef.current);
+            const clamped = Math.max(0, Math.min(maxIndex, nearest));
+
+            targetRef.current = clamped;
+            rawProgress.set(clamped);
+            goToSection(clamped);
+
+            // Release lock shortly after
+            setTimeout(() => { isScrolling.current = false; }, 50);
+        }, 150);
+    };
+
+    // Global constraints
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         document.documentElement.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
-        };
-    }, []);
 
-    // Sync URL hash
-    useEffect(() => {
-        const id = sectionIds[activeIndex];
-        if (id) window.history.replaceState(null, '', `#${id}`);
-    }, [activeIndex, sectionIds]);
-
-    // Read hash on mount
-    useEffect(() => {
         const hash = window.location.hash.slice(1);
         if (hash) {
             const i = sectionIds.indexOf(hash);
             if (i >= 0) goToSection(i);
         }
+
+        return () => {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // --- Helpers ---
-    const doTransition = (dir: 'next' | 'prev') => {
-        if (lockRef.current) return;
-        const cur = idxRef.current;
-        if (dir === 'next' && cur >= sectionIds.length - 1) return;
-        if (dir === 'prev' && cur <= 0) return;
+    useEffect(() => {
+        if (!isScrolling.current) {
+            const id = sectionIds[activeIndex];
+            if (id) window.history.replaceState(null, '', `#${id}`);
+        }
+    }, [activeIndex, sectionIds]);
 
-        lockRef.current = true;
-        accRef.current = 0;
-        dir === 'next' ? goNext() : goPrev();
-
-        setTimeout(() => {
-            lockRef.current = false;
-        }, TRANSITION_MS + 100);
-    };
-
-    // --- Wheel ---
+    // Wheel Event handling
     useEffect(() => {
         const onWheel = (e: WheelEvent) => {
-            if (lockRef.current) {
-                e.preventDefault();
-                return;
-            }
-
-            // Allow internal scroll if section content overflows
-            const panels = containerRef.current?.querySelectorAll<HTMLElement>(
-                '[data-cylinder-panel]',
-            );
-            const panel = panels?.[idxRef.current];
+            // Respect nested scrolling panels
+            const panels = containerRef.current?.querySelectorAll<HTMLElement>('[data-cylinder-panel]');
+            const panel = panels?.[activeIndex];
             if (panel) {
-                const { scrollTop, scrollHeight, clientHeight } = panel;
-                const scrollable = scrollHeight > clientHeight + 2;
+                const scrollable = panel.scrollHeight > panel.clientHeight + 2;
                 if (scrollable) {
-                    if (e.deltaY > 0 && scrollTop + clientHeight < scrollHeight - 2) return;
-                    if (e.deltaY < 0 && scrollTop > 1) return;
+                    if (e.deltaY > 0 && Math.ceil(panel.scrollTop + panel.clientHeight) < panel.scrollHeight - 2) return;
+                    if (e.deltaY < 0 && panel.scrollTop > 2) return;
                 }
             }
 
             e.preventDefault();
 
-            accRef.current += e.deltaY;
-            if (accTimerRef.current) clearTimeout(accTimerRef.current);
-            accTimerRef.current = setTimeout(() => {
-                accRef.current = 0;
-            }, WHEEL_RESET_MS);
+            let delta = e.deltaY;
+            if (Math.abs(delta) > 100) delta = Math.sign(delta) * 100;
 
-            if (Math.abs(accRef.current) < WHEEL_THRESHOLD) return;
-            doTransition(accRef.current > 0 ? 'next' : 'prev');
+            processDelta(delta * WHEEL_MULTIPLIER);
         };
 
         const el = containerRef.current;
         el?.addEventListener('wheel', onWheel, { passive: false });
+        // NOTE: we add processDelta and WHEEL_MULTIPLIER implicitly to deps via their stability or refs, 
+        // but it's safe to just bind on component mount lifecycle
         return () => el?.removeEventListener('wheel', onWheel);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [activeIndex, maxIndex]);
 
-    // --- Keyboard ---
+    // Touch Support
+    useEffect(() => {
+        let lastY = 0;
+        let isPanelScrollable = false;
+
+        const onTouchStart = (e: TouchEvent) => {
+            lastY = e.touches[0].clientY;
+            const panels = containerRef.current?.querySelectorAll<HTMLElement>('[data-cylinder-panel]');
+            const panel = panels?.[activeIndex];
+            if (panel) {
+                isPanelScrollable = panel.scrollHeight > panel.clientHeight + 2;
+            }
+        };
+
+        const onTouchMove = (e: TouchEvent) => {
+            if (isPanelScrollable) {
+                const panels = containerRef.current?.querySelectorAll<HTMLElement>('[data-cylinder-panel]');
+                const panel = panels?.[activeIndex];
+                if (panel) {
+                    const dy = lastY - e.touches[0].clientY;
+                    if (dy > 0 && Math.ceil(panel.scrollTop + panel.clientHeight) < panel.scrollHeight - 2) {
+                        lastY = e.touches[0].clientY;
+                        return;
+                    }
+                    if (dy < 0 && panel.scrollTop > 2) {
+                        lastY = e.touches[0].clientY;
+                        return;
+                    }
+                }
+            }
+
+            e.preventDefault();
+            const currentY = e.touches[0].clientY;
+            const dy = lastY - currentY;
+            lastY = currentY;
+
+            const deltaProgress = (dy / window.innerHeight) * TOUCH_MULTIPLIER;
+            processDelta(deltaProgress);
+        };
+
+        const el = containerRef.current;
+        el?.addEventListener('touchstart', onTouchStart, { passive: true });
+        el?.addEventListener('touchmove', onTouchMove, { passive: false });
+        return () => {
+            el?.removeEventListener('touchstart', onTouchStart);
+            el?.removeEventListener('touchmove', onTouchMove);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeIndex, maxIndex]);
+
+    // Keyboard support
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             const t = e.target;
@@ -119,18 +246,18 @@ export function CylinderScroll({ children }: { children: React.ReactNode }) {
             )
                 return;
 
-            let dir: 'next' | 'prev' | null = null;
+            let diff = 0;
             switch (e.key) {
                 case 'ArrowDown':
                 case 'PageDown':
-                    dir = 'next';
+                    diff = 1;
                     break;
                 case 'ArrowUp':
                 case 'PageUp':
-                    dir = 'prev';
+                    diff = -1;
                     break;
                 case ' ':
-                    dir = e.shiftKey ? 'prev' : 'next';
+                    diff = e.shiftKey ? -1 : 1;
                     break;
                 case 'Home':
                     e.preventDefault();
@@ -138,57 +265,23 @@ export function CylinderScroll({ children }: { children: React.ReactNode }) {
                     return;
                 case 'End':
                     e.preventDefault();
-                    goToSection(sectionIds.length - 1);
+                    goToSection(maxIndex);
                     return;
             }
-            if (dir) {
+
+            if (diff !== 0) {
                 e.preventDefault();
-                doTransition(dir);
+                const newTarget = Math.max(0, Math.min(maxIndex, activeIndex + diff));
+                targetRef.current = newTarget;
+                rawProgress.set(newTarget);
+                goToSection(newTarget);
             }
         };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [activeIndex, maxIndex]);
 
-    // --- Touch ---
-    useEffect(() => {
-        let startY = 0;
-        let startT = 0;
-
-        const onStart = (e: TouchEvent) => {
-            startY = e.touches[0].clientY;
-            startT = Date.now();
-        };
-        const onEnd = (e: TouchEvent) => {
-            const dy = startY - e.changedTouches[0].clientY;
-            if (Math.abs(dy) < 50 || Date.now() - startT > 800) return;
-            doTransition(dy > 0 ? 'next' : 'prev');
-        };
-
-        const el = containerRef.current;
-        el?.addEventListener('touchstart', onStart, { passive: true });
-        el?.addEventListener('touchend', onEnd, { passive: true });
-        return () => {
-            el?.removeEventListener('touchstart', onStart);
-            el?.removeEventListener('touchend', onEnd);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // --- Hashchange (external navigation, e.g. Hero #projects link) ---
-    useEffect(() => {
-        const onHash = () => {
-            const hash = window.location.hash.slice(1);
-            const i = sectionIds.indexOf(hash);
-            if (i >= 0 && i !== idxRef.current) goToSection(i);
-        };
-        window.addEventListener('hashchange', onHash);
-        return () => window.removeEventListener('hashchange', onHash);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // --- Render ---
     return (
         <div
             ref={containerRef}
@@ -199,43 +292,17 @@ export function CylinderScroll({ children }: { children: React.ReactNode }) {
             }}
         >
             <div className="relative w-full h-full" style={{ transformStyle: 'preserve-3d' }}>
-                {sections.map((section, i) => {
-                    const offset = i - activeIndex;
-                    const nearby = Math.abs(offset) <= 1;
-
-                    const anim = shouldReduceMotion
-                        ? { opacity: offset === 0 ? 1 : 0 }
-                        : {
-                            rotateX: offset === 0 ? 0 : offset > 0 ? 75 : -75,
-                            z: offset === 0 ? 0 : -400,
-                            opacity: offset === 0 ? 1 : 0,
-                            scale: offset === 0 ? 1 : 0.85,
-                        };
-
-                    const trans = shouldReduceMotion
-                        ? { duration: 0.15 }
-                        : { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const };
-
-                    return (
-                        <motion.div
-                            key={sectionIds[i] ?? i}
-                            data-cylinder-panel=""
-                            className="absolute inset-0 overflow-y-auto"
-                            animate={anim}
-                            transition={trans}
-                            style={{
-                                transformOrigin: '50% 50%',
-                                backfaceVisibility: 'hidden',
-                                pointerEvents: offset === 0 ? 'auto' : 'none',
-                                visibility: nearby ? 'visible' : 'hidden',
-                                zIndex: offset === 0 ? 10 : 1,
-                                willChange: 'transform, opacity',
-                            }}
-                        >
-                            {section}
-                        </motion.div>
-                    );
-                })}
+                {sections.map((section, i) => (
+                    <CylinderPanel
+                        key={sectionIds[i] ?? i}
+                        index={i}
+                        activeIndex={activeIndex}
+                        springProgress={springProgress}
+                        shouldReduceMotion={shouldReduceMotion}
+                    >
+                        {section}
+                    </CylinderPanel>
+                ))}
             </div>
         </div>
     );

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 export function About() {
     return (
-        <section id="about" className="py-24 relative bg-black/20 border-y border-border/50">
+        <section id="about" className="min-h-screen flex flex-col justify-center w-full py-24 relative bg-black/20 border-y border-border/50">
             <div className="container mx-auto px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -43,10 +43,15 @@ export function About() {
                                     <span className="col-span-2 font-medium">B. Advanced Computing</span>
                                 </li>
                                 <li className="grid grid-cols-3 gap-2">
-                                    <span className="text-muted-foreground">Graduation</span>
-                                    <span className="col-span-2 font-mono">2028</span>
+                                    <span className="text-muted-foreground">Major</span>
+                                    <span className="col-span-2 font-mono text-xs mt-0.5">Computer Science & Cybersecurity</span>
+                                </li>
+                                <li className="grid grid-cols-3 gap-2">
+                                    <span className="text-muted-foreground">Achievement</span>
+                                    <span className="col-span-2 font-medium text-emerald-400">WAM: Distinction</span>
                                 </li>
                             </ul>
+
                         </div>
 
                     </div>

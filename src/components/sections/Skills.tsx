@@ -4,7 +4,7 @@ import { skillsData } from '@/data/skills';
 
 export function Skills() {
     return (
-        <section id="skills" className="py-24 relative border-t border-border/50 bg-[#07070d]">
+        <section id="skills" className="min-h-screen flex flex-col justify-center w-full py-24 relative border-t border-border/50 bg-[#07070d]">
             <div className="container mx-auto px-6 max-w-5xl">
                 <div className="mb-16 text-center">
                     <h2 className="text-3xl font-bold tracking-tight mb-4">Technical Proficiencies</h2>
@@ -13,7 +13,7 @@ export function Skills() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {skillsData.map((category, i) => (
                         <motion.div
                             key={category.category}
@@ -29,14 +29,23 @@ export function Skills() {
                             </h3>
 
                             <ul className="space-y-4">
-                                {category.skills.map(skill => (
-                                    <li key={skill.name} className="flex justify-between items-center group">
-                                        <span className="font-mono text-sm text-foreground">{skill.name}</span>
-                                        <span className="text-xs text-muted-foreground border border-border/50 bg-secondary/50 px-2 py-0.5 rounded-full transition-colors group-hover:bg-secondary group-hover:text-foreground">
-                                            {skill.level}
-                                        </span>
-                                    </li>
-                                ))}
+                                {category.items.map((item, idx) => {
+                                    if (typeof item === 'string') {
+                                        return (
+                                            <li key={idx} className="flex justify-start items-center">
+                                                <span className="font-mono text-sm text-foreground">{item}</span>
+                                            </li>
+                                        );
+                                    }
+                                    return (
+                                        <li key={item.name} className="flex flex-col gap-1">
+                                            <span className="font-mono text-sm text-foreground font-semibold">{item.name}</span>
+                                            {item.description && (
+                                                <span className="text-sm text-muted-foreground">{item.description}</span>
+                                            )}
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         </motion.div>
                     ))}

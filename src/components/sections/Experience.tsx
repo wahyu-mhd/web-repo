@@ -30,20 +30,24 @@ export function Experience() {
 
                         <div className="text-primary font-medium mb-4 flex gap-3 items-center">
                             <span>{exp.company}</span>
-                            <span className="text-xs border border-primary/20 bg-primary/10 px-2 py-0.5 rounded text-primary">{exp.type}</span>
+                            {exp.type && <span className="text-xs border border-primary/20 bg-primary/10 px-2 py-0.5 rounded text-primary">{exp.type}</span>}
                         </div>
 
-                        <p className="text-muted-foreground mb-4 leading-relaxed max-w-3xl">
-                            {exp.description}
-                        </p>
-
-                        <div className="flex flex-wrap gap-2 mt-4">
-                            {exp.technologies.map(tech => (
-                                <span key={tech} className="font-mono text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-md">
-                                    {tech}
-                                </span>
+                        <ul className="list-disc pl-5 space-y-2 text-muted-foreground mb-4 leading-relaxed max-w-3xl">
+                            {exp.description.map((desc, i) => (
+                                <li key={i}>{desc}</li>
                             ))}
-                        </div>
+                        </ul>
+
+                        {exp.technologies && exp.technologies.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-4">
+                                {exp.technologies.map(tech => (
+                                    <span key={tech} className="font-mono text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-md">
+                                        {tech}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                     </motion.div>
                 ))}
             </div>
