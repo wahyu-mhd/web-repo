@@ -14,7 +14,7 @@ export const experiences: Experience[] = [
         id: 'exp1',
         role: 'Tech Specialist Executive',
         company: 'University of Sydney Cyber Security Society | Organization',
-        duration: 'Feb 2026 - present / Jun 2025 - Present',
+        duration: 'Feb 2026 - present',
         location: 'NSW, Australia',
         description: [
             'Engineered and managed the scalable cloud-based infrastructure for society-wide CTF competitions, ensuring 99.9% uptime for 100+ concurrent participants.',
