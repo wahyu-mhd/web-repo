@@ -19,8 +19,26 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Engineering & Cybersecurity Portfolio',
-  description: 'Computer Science Student Building Secure and Reliable Systems.',
+  metadataBase: new URL('https://www.wahyumhd.com'),
+  title: 'Wahyu Mahendra | Cybersecurity & Software Engineering',
+  description: 'I build secure, reliable, and user-centric systems. Specializing in cybersecurity, cloud infrastructure, and software engineering.',
+  keywords: ['Wahyu Mahendra', 'Cyber Security', 'Software Engineering', 'Portfolio', 'Cloud Infrastructure', 'Australia'],
+  openGraph: {
+    title: 'Wahyu Mahendra | Engineering Portfolio',
+    description: 'Computer Science Student building secure and optimal systems. View my projects and experience.',
+    url: 'https://www.wahyumhd.com',
+    siteName: 'Wahyu Mahendra',
+    images: [
+      {
+        url: '/profile.webp',
+        width: 800,
+        height: 1000,
+        alt: 'Wahyu Mahendra Profile Picture'
+      }
+    ],
+    locale: 'en_US',
+    type: 'website',
+  }
 };
 
 export default function RootLayout({

@@ -3,13 +3,13 @@ import type { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
     return [
         {
-            url: 'https://example.com',
+            url: 'https://www.wahyumhd.com',
             lastModified: new Date(),
-            changeFrequency: 'yearly',
+            changeFrequency: 'weekly',
             priority: 1,
         },
         {
-            url: 'https://example.com/resume.pdf',
+            url: 'https://www.wahyumhd.com/resume.pdf',
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.8,
