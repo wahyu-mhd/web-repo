@@ -44,7 +44,11 @@ const NetworkMesh = () => {
     );
 };
 
+import { useSectionNavigation } from '@/lib/section-context';
+
 export function Hero() {
+    const { goToSection } = useSectionNavigation();
+
     return (
         <section id="home" className="relative min-h-[90vh] flex items-center justify-center pt-24 overflow-hidden">
             <NetworkMesh />
@@ -84,10 +88,10 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.3 }}
                     className="flex flex-col sm:flex-row gap-4"
                 >
-                    <a href="#projects" className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring gap-2 group">
+                    <button onClick={() => goToSection(3)} className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring gap-2 group">
                         View Projects
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </a>
+                    </button>
 
                     <a href="/resume.pdf" target="_blank" className="inline-flex h-12 items-center justify-center rounded-md border border-border bg-background px-8 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring gap-2">
                         <Download className="w-4 h-4" />
