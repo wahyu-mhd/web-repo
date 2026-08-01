@@ -2,7 +2,7 @@ export function Footer() {
     return (
         <footer className="border-t border-border/50 bg-background py-8">
             <div className="container mx-auto px-6 text-center text-sm text-muted-foreground flex flex-col justify-center items-center gap-4">
-                <p>&copy; {new Date().getFullYear()} Wahyu Mahendra. All rights reserved.</p>
+                {/* <p>&copy; {new Date().getFullYear()} Wahyu Mahendra. All rights reserved.</p> */}
                 {/* <div className="flex gap-4">
                     <a href="https://github.com" className="hover:text-primary transition-colors">GitHub</a>
                     <a href="https://linkedin.com" className="hover:text-primary transition-colors">LinkedIn</a>

@@ -95,10 +95,10 @@ export function Hero() {
                     </a>
 
                     <div className="flex gap-2 ml-0 sm:ml-4">
-                        <a href="https://github.com" target="_blank" className="inline-flex h-12 w-12 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+                        <a href="https://github.com/wahyu-mhd" target="_blank" className="inline-flex h-12 w-12 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
                             <FaGithub className="w-5 h-5" />
                         </a>
-                        <a href="https://linkedin.com" target="_blank" className="inline-flex h-12 w-12 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+                        <a href="https://www.linkedin.com/in/i-putu-wahyu-mahendra-591242286" target="_blank" className="inline-flex h-12 w-12 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
                             <FaLinkedin className="w-5 h-5" />
                         </a>
                     </div>
