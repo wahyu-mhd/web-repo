@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Mail, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { sendContactEmail } from '@/app/actions/contact';
 
 export function Contact() {
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -10,9 +11,25 @@ export function Contact() {
         e.preventDefault();
         setStatus('loading');
 
-        // Simulate server action latency for demonstration
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setStatus('success');
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        const name = formData.get('name') as string;
+        const email = formData.get('email') as string;
+        const message = formData.get('message') as string;
+
+        try {
+            const result = await sendContactEmail({ name, email, message });
+            if (result.error) {
+                setStatus('error');
+            } else {
+                setStatus('success');
+                form.reset();
+                setTimeout(() => setStatus('idle'), 5000); // Reset status after 5s
+            }
+        } catch (error) {
+            setStatus('error');
+            setTimeout(() => setStatus('idle'), 5000);
+        }
     };
 
     return (
@@ -64,16 +81,16 @@ export function Contact() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label htmlFor="name" className="text-xs font-medium text-foreground">Name</label>
-                                <input id="name" required className="w-full bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary h-10" />
+                                <input id="name" name="name" required className="w-full bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary h-10" />
                             </div>
                             <div className="space-y-2">
                                 <label htmlFor="email" className="text-xs font-medium text-foreground">Email</label>
-                                <input id="email" type="email" required className="w-full bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary h-10" />
+                                <input id="email" name="email" type="email" required className="w-full bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary h-10" />
                             </div>
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="message" className="text-xs font-medium text-foreground">Message</label>
-                            <textarea id="message" required className="w-full bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary min-h-[120px] resize-y" />
+                            <textarea id="message" name="message" required className="w-full bg-background border border-border/50 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary min-h-[120px] resize-y" />
                         </div>
 
                         <button disabled={status === 'loading' || status === 'success'} className="h-10 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-md hover:bg-primary/90 transition-colors w-full flex items-center justify-center gap-2 disabled:opacity-50">
