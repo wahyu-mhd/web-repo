@@ -66,14 +66,6 @@ export function Contact() {
                         ipwahyumahendra@gmail.com
                         <span className="text-xs text-muted-foreground border border-border/50 bg-background px-2 py-0.5 rounded">Copy</span>
                     </button>
-
-                    <button
-                        onClick={() => navigator.clipboard.writeText('(+61)422-114-196')}
-                        className="w-full mt-4 justify-between flex items-center px-4 py-3 bg-secondary border border-border/50 rounded-md font-mono text-sm text-foreground hover:bg-secondary/70 transition-colors"
-                    >
-                        (+61) 422-114-196
-                        <span className="text-xs text-muted-foreground border border-border/50 bg-background px-2 py-0.5 rounded">Copy</span>
-                    </button>
                 </div>
 
                 <div className="flex-[1.5] border-t md:border-t-0 md:border-l border-border/50 pt-8 md:pt-0 md:pl-8">
