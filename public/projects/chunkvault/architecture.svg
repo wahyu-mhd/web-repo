@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="640" viewBox="0 0 1000 640" role="img" aria-labelledby="title desc">
+  <title id="title">ChunkVault system architecture</title>
+  <desc id="desc">A trusted device connects privately through Tailscale Serve to the Raspberry Pi-hosted FastAPI application. The backend uses PostgreSQL and stores encrypted file chunks in Backblaze B2.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#55745c" stroke-width="1.5"/></marker></defs>
+  <rect width="1000" height="640" rx="16" fill="#e9ede3"/>
+  <g font-family="Arial,sans-serif" fill="#294332">
+    <text x="44" y="49" font-size="14" letter-spacing="2">CHUNKVAULT / SYSTEM ARCHITECTURE</text>
+    <rect x="45" y="93" width="265" height="100" rx="10" fill="#fafbf6" stroke="#a8b79d"/>
+    <text x="177" y="132" text-anchor="middle" font-size="22">Trusted device</text><text x="177" y="163" text-anchor="middle" font-size="16">Browser dashboard</text>
+    <rect x="45" y="280" width="265" height="94" rx="10" fill="#fafbf6" stroke="#a8b79d"/>
+    <text x="177" y="320" text-anchor="middle" font-size="22">Tailscale Serve</text><text x="177" y="348" text-anchor="middle" font-size="16">Private remote access</text>
+    <rect x="385" y="93" width="565" height="340" rx="12" fill="#dbe5d2" stroke="#8fa480" stroke-dasharray="7 5"/>
+    <text x="416" y="130" font-size="14" letter-spacing="2">RASPBERRY PI / APPLICATION HOST</text>
+    <rect x="420" y="164" width="495" height="112" rx="9" fill="#fafbf6" stroke="#a8b79d"/>
+    <text x="667" y="204" text-anchor="middle" font-size="23">FastAPI backend</text><text x="667" y="237" text-anchor="middle" font-size="16">Authentication · Chunking · Encryption</text>
+    <rect x="420" y="317" width="495" height="76" rx="9" fill="#fafbf6" stroke="#a8b79d"/>
+    <text x="667" y="362" text-anchor="middle" font-size="22">PostgreSQL + SQLAlchemy</text>
+    <rect x="420" y="503" width="495" height="94" rx="10" fill="#fafbf6" stroke="#a8b79d"/>
+    <text x="667" y="543" text-anchor="middle" font-size="23">Backblaze B2</text><text x="667" y="574" text-anchor="middle" font-size="16">Encrypted file chunks</text>
+    <text x="45" y="545" font-size="23">Private by design.</text><text x="45" y="576" font-size="16">No public service exposure.</text>
+  </g>
+  <g fill="none" stroke="#55745c" stroke-width="2" marker-end="url(#arrow)"><path d="M177 193V268"/><path d="M310 327H348V220H408"/><path d="M667 276V307"/><path d="M915 221H973V473H667V491"/></g>
+</svg>

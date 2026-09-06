@@ -1,64 +1,67 @@
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
+import { Newsreader, Source_Sans_3 } from 'next/font/google';
 import './globals.css';
 import { Footer } from '@/components/layout/Footer';
-import { SectionNav } from '@/components/layout/SectionNav';
+import { SiteHeader } from '@/components/layout/SiteHeader';
 import { CommandPalette } from '@/components/CommandPalette';
-import { SectionProvider } from '@/lib/section-context';
-
-const jakartaSans = Plus_Jakarta_Sans({
-  variable: '--font-jakarta',
+const sans = Source_Sans_3({
+  variable: '--font-sans-body',
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  display: 'swap',
 });
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: '--font-jetbrains-mono',
+const editorial = Newsreader({
+  variable: '--font-editorial',
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  display: 'swap',
 });
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.wahyumhd.com'),
-  title: 'Wahyu Mahendra | Cybersecurity & Software Engineering',
-  description: 'I build secure, reliable, and user-centric systems. Specializing in cybersecurity, cloud infrastructure, and software engineering.',
-  keywords: ['Wahyu Mahendra', 'Cyber Security', 'Software Engineering', 'Portfolio', 'Cloud Infrastructure', 'Australia'],
+  title: {
+    default: 'Wahyu Mahendra | Engineering & Photography',
+    template: '%s | Wahyu Mahendra',
+  },
+  description:
+    'I Putu Wahyu Mahendra, an Advanced Computing student at the University of Sydney. Backend engineering, cybersecurity, infrastructure, and photography.',
+  keywords: [
+    'Wahyu Mahendra',
+    'Cyber Security',
+    'Software Engineering',
+    'Portfolio',
+    'Cloud Infrastructure',
+    'Australia',
+  ],
   openGraph: {
-    title: 'Wahyu Mahendra | Engineering Portfolio',
-    description: 'Computer Science Student building secure and optimal systems. View my projects and experience.',
-    url: 'https://www.wahyumhd.com',
+    title: 'Wahyu Mahendra | Engineering & Photography',
+    description:
+      'Backend systems, security, and a curious eye. Explore my projects and experience.',
     siteName: 'Wahyu Mahendra',
     images: [
       {
-        url: '/profile.webp',
-        width: 800,
-        height: 1000,
-        alt: 'Wahyu Mahendra Profile Picture'
-      }
+        url: '/profile.jpg',
+        width: 681,
+        height: 955,
+        alt: 'I Putu Wahyu Mahendra',
+      },
     ],
-    locale: 'en_US',
+    locale: 'en_AU',
     type: 'website',
-  }
+  },
 };
-
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body
-        className={`${jakartaSans.variable} ${jetbrainsMono.variable} antialiased min-h-screen flex flex-col bg-background text-foreground`}
-      >
-        <SectionProvider>
-          <CommandPalette />
-          <SectionNav />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-        </SectionProvider>
+    <html lang="en">
+      <body className={`${sans.variable} ${editorial.variable}`}>
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
+        <SiteHeader />
+        <CommandPalette />
+        <main id="main-content" tabIndex={-1}>
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

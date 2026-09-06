@@ -1,85 +1,120 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { projects } from '@/data/projects';
 import Link from 'next/link';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
-import { FaGithub } from 'react-icons/fa6';
-
-// Generates static routes at build time for performance
-// export async function generateStaticParams() {
-//   return projects.map((post) => ({
-//     slug: post.slug,
-//   }));
-// }
-
-export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
-    const resolvedParams = await params;
-    const project = projects.find((p) => p.slug === resolvedParams.slug);
-
-    if (!project) notFound();
-
-    return (
-        <div className="container mx-auto px-6 py-24 max-w-4xl relative">
-            <Link href="/#projects" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-12 transition-colors group">
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                Back to Archive
-            </Link>
-
-            <header className="mb-16">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-                    <div>
-                        <span className="font-mono text-primary mb-3 block">{project.category}</span>
-                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{project.title}</h1>
-                    </div>
-
-                    <div className="flex gap-4 pb-1">
-                        {project.links?.github && (
-                            <a href={project.links.github} target="_blank" className="inline-flex items-center gap-2 px-4 py-2 border border-border bg-card hover:bg-secondary rounded-md text-sm transition-colors">
-                                <FaGithub className="w-4 h-4" /> Code
-                            </a>
-                        )}
-                        {project.links?.demo && (
-                            <a href={project.links.demo} target="_blank" className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/30 hover:bg-primary hover:text-primary-foreground rounded-md text-sm transition-colors">
-                                <ExternalLink className="w-4 h-4" /> Live Demo
-                            </a>
-                        )}
-                    </div>
-                </div>
-
-                <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl">
-                    {/* Minimal intro or first desc line as motivation if we wanted, but we can just use the description block directly. */}
-                </p>
-                {project.images && project.images.length > 0 && (
-                    <div className="flex flex-col gap-6 w-full max-w-4xl mt-8 mb-8">
-                        {project.images.map((imgSrc, idx) => (
-                            <div key={idx} className="overflow-hidden rounded-xl border border-border/50 shadow-md">
-                                <img src={imgSrc} alt={`${project.title} screenshot ${idx + 1}`} className="w-full h-auto object-cover" />
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </header>
-
-            <div className="max-w-3xl space-y-8 text-foreground/90 leading-relaxed text-lg">
-                {project.description.map((desc, i) => (
-                    <p key={i}>
-                        {desc}
-                    </p>
-                ))}
-
-                {project.subBullets && project.subBullets.length > 0 && (
-                    <ul className="list-disc pl-6 space-y-2 mt-4 marker:text-primary/70">
-                        {project.subBullets.map((bullet, i) => (
-                            <li key={i}>{bullet}</li>
-                        ))}
-                    </ul>
-                )}
-
-                {project.descriptionContinuation && (
-                    <p className="mt-6">
-                        {project.descriptionContinuation}
-                    </p>
-                )}
-            </div>
+import Image from 'next/image';
+import { ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { projects } from '@/data/projects';
+import { readArticle } from '@/lib/article';
+import { ArticleBody } from '@/components/article/ArticleBody';
+import { TableOfContents } from '@/components/article/TableOfContents';
+import { ProjectArtwork } from '@/components/ProjectArtwork';
+export function generateStaticParams() {
+  return projects.map((p) => ({ slug: p.slug }));
+}
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = projects.find((p) => p.slug === slug);
+  if (!project) return { title: 'Project not found' };
+  return {
+    title: project.title,
+    description: project.shortDescription,
+    alternates: { canonical: '/projects/' + slug },
+    openGraph: {
+      title: project.title,
+      description: project.shortDescription,
+      url: '/projects/' + slug,
+      type: 'article',
+      ...(project.cover
+        ? {
+            images: [
+              {
+                url: project.cover.src,
+                alt: project.cover.alt,
+                width: project.cover.width,
+                height: project.cover.height,
+              },
+            ],
+          }
+        : {}),
+    },
+  };
+}
+export default async function ProjectPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const project = projects.find((p) => p.slug === slug);
+  if (!project) notFound();
+  const { markdown, toc } = await readArticle(slug);
+  const nextProject =
+    projects[(projects.indexOf(project) + 1) % projects.length];
+  return (
+    <div className="shell article-page">
+      <Link href="/#projects" className="back-link">
+        <ArrowLeft size={16} />
+        Back to selected work
+      </Link>
+      <header className="article-header">
+        <p className="eyebrow">{project.category}</p>
+        <h1>{project.title}</h1>
+        <p className="article-summary">{project.shortDescription}</p>
+        <ul className="tags">
+          {project.technologies.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
+        <div className="article-external-links">
+          {project.links?.github && (
+            <a href={project.links.github}>Repository ↗</a>
+          )}
+          {project.links?.demo && <a href={project.links.demo}>Demo ↗</a>}
+          {project.links?.live && (
+            <a href={project.links.live}>Visit project ↗</a>
+          )}
         </div>
-    );
+      </header>
+      <div className="article-layout">
+        <TableOfContents entries={toc} />
+        <article className="article-content" aria-label={project.title}>
+          {project.cover ? (
+            <Image
+              src={project.cover.src}
+              alt={project.cover.alt}
+              width={project.cover.width}
+              height={project.cover.height}
+              sizes="(max-width: 800px) 100vw, 740px"
+            />
+          ) : (
+            <ProjectArtwork kind={project.motif} />
+          )}
+          <ArticleBody markdown={markdown} />
+          {project.writeupPending && (
+            <aside className="writeup-note">
+              <span className="small-dot" />
+              <div>
+                <strong>Detailed write-up coming soon.</strong>
+                <p>
+                  A short project overview for now. The full technical
+                  walkthrough will follow.
+                </p>
+              </div>
+            </aside>
+          )}
+        </article>
+      </div>
+      <Link href={`/projects/${nextProject.slug}`} className="next-project">
+        <span className="eyebrow">EXPLORE ANOTHER PROJECT</span>
+        <span>
+          {nextProject.title}
+          <ArrowUpRight />
+        </span>
+      </Link>
+    </div>
+  );
 }
