@@ -41,7 +41,7 @@ Put local assets under `public/projects/<slug>/`.
 
 ## Add photographs
 
-Only add your actual photographs. The public gallery is empty until you do.
+Only add your actual photographs. The gallery currently includes seven supplied photographs.
 
 1. Save an appropriately sized JPEG, WebP or AVIF under `public/photography/`.
 2. Add an entry to the `photos` array in `src/data/photos.ts`:
@@ -68,3 +68,24 @@ Robots, Google verification, favicon, social URLs and the résumé route are pre
 - Existing website Rust and Terraform claims are not supported by this CV and were removed.
 - Expected graduation, internship availability, project dates, repository/demo URLs, detailed decisions and results need your input.
 - CV metrics are not used as decorative counters. Add measurement context before expanding them in case studies.
+
+## Photography viewer and EXIF
+
+Edit `src/data/photos.ts` for all photographs, display titles, manual metadata, categories and the introduction. The seven supplied photographs are real; example objects below are documentation only.
+
+- Put JPEG, WebP or AVIF images in `public/photography/`. Keep originals elsewhere; an export around 2400–3200px on the long edge and 0.5–2 MB is usually sufficient. The current originals are retained and Next Image serves responsive optimized versions.
+- Add an entry with a unique CSS-safe `id` (lowercase letters, numbers and hyphens), `src`, descriptive `alt`, and actual `width`/`height`. Add `title` for the catalogue name. Array order controls the gallery sequence.
+- Optional `slug` controls the share URL; otherwise `id` is used: `/photography?photo=coastal-waves`.
+- Set `featured: true` to span two desktop/tablet columns. Mobile always uses one column.
+- Set `category` freely; category filters are intentionally not displayed.
+- Add `location`, `year`, `camera`, `lens`, `focalLength`, `aperture`, `shutterSpeed`, `iso`, or `copyright` when known. Missing fields are omitted.
+- `src/lib/photography.ts` reads EXIF on the server during static page generation using `exifr`. Manual fields override EXIF. Rebuild after replacing assets. GPS is not extracted. Corrupt EXIF blocks are omitted; the Opera House export currently needs manual metadata.
+- Browser Back closes a gallery-opened viewer. Direct photo links open after hydration; closing a direct link removes the query without navigating away. Previous/next wraps and replaces the current photo URL.
+- Native cross-document mode transitions are preserved. Same-document viewer transitions use unique image names where supported; other browsers use a short fade. Reduced-motion disables animations. Native dialog handles focus trapping; buttons, arrow keys, Escape and mobile horizontal swipe remain available.
+
+Documentation-only PLACEHOLDER examples (do not add until the corresponding real files exist):
+
+```ts
+{ id: 'example-street', src: '/photography/YOUR-STREET.jpg', title: 'Your title', alt: 'Describe your photograph', width: 3000, height: 2000, category: 'Street', featured: true }
+{ id: 'example-portrait', src: '/photography/YOUR-PORTRAIT.jpg', title: 'Your title', alt: 'Describe your photograph', width: 2000, height: 3000, category: 'People' }
+```

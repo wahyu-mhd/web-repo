@@ -8,6 +8,170 @@ export interface Photo {
   location?: string;
   date?: string;
   camera?: string;
+  title?: string;
+  slug?: string;
+  year?: number;
+  lens?: string;
+  focalLength?: string;
+  aperture?: string;
+  shutterSpeed?: string;
+  iso?: string;
+  category?: string;
+  featured?: boolean;
+  copyright?: string;
 }
-// Add your own photographs here. See CONTENT_GUIDE.md. No sample photos are published.
-export const photos: Photo[] = [];
+// Array order is gallery order. See CONTENT_GUIDE.md for adding photographs.
+export const photos: Photo[] = [
+  {
+    id: 'coastal-waves',
+    title: 'Coastal rhythm',
+    category: 'Landscape',
+    featured: true,
+    src: '/photography/IMG_1288.JPEG',
+    alt: 'Waves and surfers below a coastal neighbourhood under a cloudy blue sky',
+    width: 6000,
+    height: 4000,
+  },
+  {
+    id: 'white-flower',
+    title: 'In the light',
+    category: 'Nature',
+    src: '/photography/IMG_1427.JPG.jpeg',
+    alt: 'Close-up of a white flower with yellow stamens against dark green foliage',
+    width: 3456,
+    height: 5184,
+  },
+  {
+    id: 'glass-lamps',
+    title: 'Light and structure',
+    category: 'Architecture',
+    src: '/photography/IMG_1454.JPG.jpeg',
+    alt: 'Two glowing glass lamps beside stained-glass windows and steel roof beams',
+    width: 6000,
+    height: 4000,
+  },
+  {
+    id: 'opera-house',
+    title: 'Across the harbour',
+    category: 'Architecture',
+    src: '/photography/IMG_1413.JPG.jpeg',
+    alt: 'Sydney Opera House across blue harbour water, framed by a white border',
+    width: 2190,
+    height: 1753,
+
+    // Add your verified details:
+    location: 'Sydney, Australia',
+    year: 2026,
+
+    // Example settings only — replace with the actual values:
+    camera: 'Sony ILCE-7C',
+    lens: 'FE 28-70mm F3.5-5.6 OSS',
+    focalLength: '51mm',
+    aperture: 'f/5.6',
+    shutterSpeed: '1/1000 s',
+    iso: '100',
+  },
+  {
+    id: 'harbour-skyline',
+    title: 'Waterfront',
+    category: 'Architecture',
+    src: '/photography/IMG_1455.JPG.jpeg',
+    alt: 'Waterfront skyline of high-rise buildings with boats crossing the harbour',
+    width: 6000,
+    height: 4000,
+    // Add your verified details:
+    location: 'Sydney, Australia',
+    year: 2026,
+
+    // Example settings only — replace with the actual values:
+    camera: 'Sony ILCE-7C',
+    lens: 'FE 28-70mm F3.5-5.6 OSS',
+    focalLength: '70mm',
+    aperture: 'f/4',
+    shutterSpeed: '1/800 s',
+    iso: '100',
+  },
+  {
+    id: 'night-street-moment',
+    title: 'After dark',
+    category: 'Street',
+    src: '/photography/IMG_1461.JPG.jpeg',
+    alt: 'Two people holding a takeaway drink on a street lit by shopfronts at night',
+    width: 6000,
+    height: 4000,
+  },
+  {
+    id: 'shopfront-portrait',
+    title: 'Shopfront light',
+    category: 'People',
+    src: '/photography/IMG_1459.JPG.jpeg',
+    alt: 'Portrait of a person in a dark hoodie outside an illuminated shopfront at night',
+    width: 6000,
+    height: 4000,
+  },
+  {
+    id: 'pink-white-flower',
+    title: 'A touch of pink',
+    category: 'Nature',
+    src: '/photography/IMG_1420.JPG.jpeg',
+    alt: 'Close-up of a pink and white flower with yellow stamens against soft green foliage',
+    width: 5184,
+    height: 3456,
+  },
+  {
+    id: 'sandstone-pigeon',
+    title: 'A quiet perch',
+    category: 'Nature',
+    src: '/photography/IMG_1409.JPG.jpeg',
+    alt: 'A grey pigeon perched on a sandstone ledge beside a stone building',
+    width: 6000,
+    height: 4000,
+
+    // Add your verified details:
+    location: 'Sydney, Australia',
+    year: 2026,
+
+    // Example settings only — replace with the actual values:
+    camera: 'Sony ILCE-7C',
+    lens: 'FE 28-70mm F3.5-5.6 OSS',
+    focalLength: '70mm',
+    aperture: 'f/5.6',
+    shutterSpeed: '1/80s',
+    iso: '125',
+  },
+  {
+    id: 'colourful-wharf',
+    title: 'Colour by the water',
+    category: 'Architecture',
+    src: '/photography/IMG_1412.JPG.jpeg',
+    alt: 'Colourful waterfront buildings beneath trees and a tall city tower across blue harbour water',
+    width: 6000,
+    height: 4000,
+    // Add your verified details:
+    location: 'Sydney, Australia',
+    year: 2026,
+
+    // Example settings only — replace with the actual values:
+    camera: 'Sony ILCE-7C',
+    lens: 'FE 28-70mm F3.5-5.6 OSS',
+    focalLength: '70mm',
+    aperture: 'f/5.6',
+    shutterSpeed: '1/800 s',
+    iso: '100',
+  },
+  {
+    id: 'pale-water-lily',
+    title: 'Petals unfolding',
+    category: 'Nature',
+    src: '/photography/IMG_1422.JPG.jpeg',
+    alt: 'A pale water lily with lavender-tipped petals and a bright yellow centre against a blurred green background',
+    width: 5184,
+    height: 3456,
+  },
+];
+
+export const photographyIntro = {
+  title: 'Photography',
+  description: 'Photography is another side of my curiosity. A space for the things I see beyond the screen.',
+  copyright: 'I Putu Wahyu Mahendra',
+};
